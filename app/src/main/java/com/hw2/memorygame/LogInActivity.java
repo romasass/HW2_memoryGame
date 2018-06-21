@@ -19,6 +19,10 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+/**
+ * HW2
+ * Roma Solovyov
+ */
 public class LogInActivity extends AppCompatActivity implements View.OnClickListener {
 
     private Button startGameButton;
