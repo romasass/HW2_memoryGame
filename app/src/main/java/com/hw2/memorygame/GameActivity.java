@@ -7,6 +7,7 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Handler;
@@ -54,37 +55,38 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game);
-        startVibrate();
         Bundle extrasBundle = this.getIntent().getExtras();
         GridLayout grid = findViewById(R.id.game_grid);
 
         sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
         mSensor = sensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE);
-       // initialPosition = sensorEvent.values[0];
+        getInitialPosition(sensorEvent);
 
         sensorEventListener = new SensorEventListener() {
             @Override
             public void onSensorChanged(SensorEvent sensorEvent) {
-                if (sensorEvent.values[0] > /*initialPosition +*/ 0.5f || sensorEvent.values[0] < /*initialPosition*/ - 0.5f){
+                if (sensorEvent.values[0] > initialPosition + 30.5f || sensorEvent.values[0] < initialPosition - 30.5f){
                     timePunisher = new CountDownTimer(3 * 1000, 1000) {
 
                         @Override
                         public void onTick(long l) {
-                            //startVibrate();
+                            startVibrate();
+
                         }
 
                         @Override
                         public void onFinish() {
-                           //stopVibrate();
+                            stopVibrate();
                             shuffleButtonGraphics();
                         }
                     }.start();
-                }
-            }
-            @Override
-            public void onAccuracyChanged(Sensor sensor, int i) {
+                }else
+                    return;
+
 
             }
+            @Override
+            public void onAccuracyChanged(Sensor sensor, int i) { }
         };
 
         int numCols = extrasBundle.getInt("columns");
@@ -126,6 +128,11 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
         countDownStart();
     }
 
+    private void getInitialPosition(SensorEvent sensorEvent){
+        initialPosition = sensorEvent.values[0];
+
+    }
+
     private void countDownStart() {
         timer = new CountDownTimer(time * 1000, 1000) {
 
@@ -140,7 +147,10 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
             public void onFinish() {
                 timer.setText("HALT!!!");
                 final Animation anim = AnimationUtils.loadAnimation(GameActivity.this, R.anim.bounce);
+                MediaPlayer mp = MediaPlayer.create(getApplicationContext(), R.raw.sad_looser);
                 Toast.makeText(GameActivity.this, "Out of time, LOSER!\nEnjoy your main menu.", Toast.LENGTH_LONG).show();
+                startVibrate();
+                mp.start();
                 new CountDownTimer(5000,1000) {
 
                     @Override
@@ -151,6 +161,7 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
 
                     @Override
                     public void onFinish() {
+                        stopVibrate();
                         returnToMenu();
                     }
                 }.start();

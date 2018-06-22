@@ -7,9 +7,6 @@ import android.support.v7.widget.AppCompatButton;
 import android.support.v7.widget.AppCompatDrawableManager;
 import android.widget.GridLayout;
 
-/**
- * Created by Daniel on 13-Apr-18.
- */
 
 public class GameButton extends AppCompatButton {
 
